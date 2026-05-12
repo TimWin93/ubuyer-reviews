@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UBuyer — Ревью референсов</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#e8e8e8;min-height:100vh}
+
+/* ── User picker ── */
+.picker-overlay{position:fixed;inset:0;background:#0f0f0f;z-index:300;display:flex;align-items:center;justify-content:center}
+.picker-box{text-align:center;padding:40px}
+.picker-logo{font-size:28px;font-weight:800;color:#fff;margin-bottom:8px}
+.picker-logo span{color:#ff6b35}
+.picker-sub{color:#666;font-size:15px;margin-bottom:40px}
+.picker-users{display:flex;gap:16px;justify-content:center}
+.picker-user{width:110px;padding:24px 16px;border-radius:16px;border:2px solid #2a2a2a;background:#1a1a1a;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:12px}
+.picker-user:hover{border-color:#ff6b35;transform:translateY(-2px)}
+.picker-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff}
+.picker-name{font-size:15px;font-weight:600;color:#fff}
+
+/* ── Header ── */
+header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:16px;color:#fff;white-space:nowrap}
+.logo span{color:#ff6b35}
+.session-badge{font-size:12px;color:#666;background:#111;padding:4px 10px;border-radius:6px;border:1px solid #2a2a2a}
+.current-user{display:flex;align-items:center;gap:8px;margin-left:auto}
+.user-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:opacity .15s}
+.user-avatar:hover{opacity:.75}
+.change-user{font-size:12px;color:#555;cursor:pointer}
+.change-user:hover{color:#aaa}
+.stats{display:flex;gap:12px;font-size:12px;color:#666}
+.stat strong{color:#ccc}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.btn-f{padding:5px 12px;border-radius:16px;border:1px solid #333;background:transparent;color:#777;cursor:pointer;font-size:12px;transition:all .15s;white-space:nowrap}
+.btn-f.active{background:#ff6b35;border-color:#ff6b35;color:#fff}
+
+/* ── Grid ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:16px 20px}
+.empty{text-align:center;padding:80px 24px;color:#444;font-size:15px;grid-column:1/-1}
+
+/* ── Card ── */
+.card{background:#1a1a1a;border-radius:12px;overflow:hidden;border:2px solid #2a2a2a;transition:border-color .15s}
+.card[data-my="approved"]{border-color:#22c55e}
+.card[data-my="maybe"]{border-color:#fbbf24}
+.card[data-my="skip"]{border-color:#ef4444;opacity:.5}
+.card[data-my="skip"]:hover{opacity:.85}
+.thumb{position:relative;cursor:pointer}
+.thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#111}
+.thumb-badge{position:absolute;top:7px;left:7px;background:#ff0050;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px}
+.thumb-dur{position:absolute;bottom:6px;right:7px;background:rgba(0,0,0,.85);color:#fff;font-size:11px;padding:2px 6px;border-radius:4px}
+.card-body{padding:11px}
+.card-title{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{font-size:11px;color:#666;display:flex;justify-content:space-between;margin-bottom:10px}
+.card-views{font-weight:600;color:#aaa}
+.card-views.hot{color:#fbbf24}
+.card-views.viral{color:#f87171}
+
+/* Vote row */
+.vote-row{display:flex;gap:6px;margin-bottom:8px}
+.btn-vote{flex:1;padding:7px 4px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
+.btn-approved{background:#1a3a2a;color:#22c55e}
+.btn-approved:hover,.btn-approved.mine{background:#22c55e;color:#fff}
+.btn-maybe{background:#2a2618;color:#fbbf24}
+.btn-maybe:hover,.btn-maybe.mine{background:#fbbf24;color:#000}
+.btn-skip{background:#2a1a1a;color:#ef4444}
+.btn-skip:hover,.btn-skip.mine{background:#ef4444;color:#fff}
+.btn-yt{flex:0 0 auto;width:34px;border-radius:8px;border:1px solid #333;background:transparent;color:#777;cursor:pointer;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn-yt:hover{border-color:#aaa;color:#fff}
+
+/* Who voted */
+.voters{display:flex;gap:5px;align-items:center;margin-bottom:8px;min-height:22px}
+.v-chip{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;opacity:.35}
+.v-chip.active{opacity:1}
+.v-chip.approved{background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)}
+.v-chip.maybe{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.v-chip.skip{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+.v-chip.none{background:#1f1f1f;color:#444;border:1px solid #2a2a2a}
+
+/* Comment btn */
+.btn-comment{width:100%;padding:6px;border-radius:7px;border:1px solid #2a2a2a;background:transparent;color:#555;cursor:pointer;font-size:11px;text-align:left;display:flex;align-items:center;gap:6px;transition:all .15s}
+.btn-comment:hover{border-color:#444;color:#aaa}
+.comment-dot{width:6px;height:6px;border-radius:50%;background:#ff6b35;display:none}
+.comment-dot.has{display:inline-block}
+
+/* ── Comment modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#1a1a1a;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:560px;max-height:80vh;display:flex;flex-direction:column}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px}
+.modal-title{font-size:14px;font-weight:600;line-height:1.4;color:#fff}
+.modal-close{background:none;border:none;color:#555;cursor:pointer;font-size:20px;line-height:1;flex-shrink:0}
+.modal-close:hover{color:#aaa}
+.comments-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:14px;min-height:60px}
+.comment-item{background:#111;border-radius:10px;padding:10px 12px}
+.comment-author{font-size:11px;font-weight:700;margin-bottom:4px}
+.comment-text{font-size:13px;color:#ccc;line-height:1.5}
+.comment-time{font-size:10px;color:#444;margin-top:4px}
+.no-comments{color:#444;font-size:13px;text-align:center;padding:20px}
+.comment-form{display:flex;gap:8px}
+.comment-input{flex:1;background:#111;border:1px solid #333;border-radius:10px;color:#e8e8e8;padding:10px 12px;font-size:13px;resize:none;height:40px;transition:height .15s;font-family:inherit}
+.comment-input:focus{outline:none;border-color:#444;height:80px}
+.comment-send{padding:0 14px;border-radius:10px;border:none;background:#ff6b35;color:#fff;cursor:pointer;font-weight:600;font-size:13px}
+.comment-send:disabled{opacity:.4;cursor:default}
+
+@media(max-width:500px){.grid{grid-template-columns:1fr;padding:10px}.picker-users{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+
+<!-- User Picker -->
+<div class="picker-overlay" id="picker">
+  <div class="picker-box">
+    <div class="picker-logo">UBuyer <span>Ревью</span></div>
+    <div class="picker-sub">Выбери себя, чтобы начать</div>
+    <div class="picker-users">
+      <div class="picker-user" onclick="selectUser('timur')">
+        <div class="picker-avatar" style="background:#ff6b35">Т</div>
+        <div class="picker-name">Тимур</div>
+      </div>
+      <div class="picker-user" onclick="selectUser('nikita')">
+        <div class="picker-avatar" style="background:#3b82f6">Н</div>
+        <div class="picker-name">Никита</div>
+      </div>
+      <div class="picker-user" onclick="selectUser('roma')">
+        <div class="picker-avatar" style="background:#22c55e">Р</div>
+        <div class="picker-name">Рома</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app" style="display:none">
+  <header>
+    <div class="logo">UBuyer <span>Ревью</span></div>
+    <div class="session-badge" id="session-date">—</div>
+    <div class="stats">
+      <div class="stat">Всего: <strong id="cnt-total">0</strong></div>
+      <div class="stat">Одобрено: <strong id="cnt-approved">0</strong></div>
+    </div>
+    <div class="filters">
+      <button class="btn-f active" data-f="all">Все</button>
+      <button class="btn-f" data-f="approved">✓ Берём</button>
+      <button class="btn-f" data-f="maybe">? Вопрос</button>
+      <button class="btn-f" data-f="new">Не просмотрено</button>
+      <button class="btn-f" data-f="consensus">🔥 Консенсус</button>
+    </div>
+    <div class="current-user">
+      <div class="user-avatar" id="my-avatar" title="Сменить пользователя" onclick="resetUser()"></div>
+      <span class="change-user" onclick="resetUser()">сменить</span>
+    </div>
+  </header>
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- Comment Modal -->
+<div class="modal-overlay" id="comment-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-video-title"></div>
+      <button class="modal-close" onclick="closeComments()">✕</button>
+    </div>
+    <div class="comments-list" id="comments-list"></div>
+    <div class="comment-form">
+      <textarea class="comment-input" id="comment-input" placeholder="Напиши комментарий…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendComment()}"></textarea>
+      <button class="comment-send" id="comment-send" onclick="sendComment()">→</button>
+    </div>
+  </div>
+</div>
+
+<script>
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+
+const USERS = {
+  timur:  { name: 'Тимур',  color: '#ff6b35', initial: 'Т' },
+  nikita: { name: 'Никита', color: '#3b82f6', initial: 'Н' },
+  roma:   { name: 'Рома',   color: '#22c55e', initial: 'Р' },
+};
+
+let me = null;
+let sessionId = null;
+let videos = [];
+let votes = {};       // videoId → {timur, nikita, roma}
+let commentCounts = {}; // videoId → count
+let currentFilter = 'all';
+let commentVideoId = null;
+let commentsUnsub = null;
+let votesUnsub = null;
+
+// ── User ────────────────────────────────────────────────────────────────────
+
+function selectUser(userId) {
+  me = userId;
+  localStorage.setItem('ubuyer_me', userId);
+  document.getElementById('picker').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  const u = USERS[userId];
+  const av = document.getElementById('my-avatar');
+  av.textContent = u.initial;
+  av.style.background = u.color;
+  loadLatestSession();
+}
+
+function resetUser() {
+  me = null;
+  localStorage.removeItem('ubuyer_me');
+  if (votesUnsub) votesUnsub();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('picker').style.display = 'flex';
+}
+
+// ── Session ──────────────────────────────────────────────────────────────────
+
+async function loadLatestSession() {
+  const snap = await db.collection('sessions')
+    .orderBy('createdAt', 'desc')
+    .limit(1)
+    .get();
+
+  if (snap.empty) {
+    document.getElementById('grid').innerHTML =
+      '<div class="empty">Нет загруженных сессий.<br>Запусти <code>python fetch_videos.py</code></div>';
+    return;
+  }
+
+  const doc = snap.docs[0];
+  sessionId = doc.id;
+  videos = doc.data().videos || [];
+
+  document.getElementById('session-date').textContent = 'Сессия ' + sessionId;
+  document.getElementById('cnt-total').textContent = videos.length;
+
+  subscribeVotes();
+  subscribeCommentCounts();
+}
+
+// ── Votes realtime ───────────────────────────────────────────────────────────
+
+function subscribeVotes() {
+  if (votesUnsub) votesUnsub();
+  votesUnsub = db.collection('sessions').doc(sessionId)
+    .collection('votes')
+    .onSnapshot(snap => {
+      snap.docChanges().forEach(ch => {
+        if (ch.type === 'removed') {
+          delete votes[ch.doc.id];
+        } else {
+          votes[ch.doc.id] = ch.doc.data();
+        }
+      });
+      renderGrid();
+      updateApprovedCount();
+    });
+}
+
+function subscribeCommentCounts() {
+  db.collection('sessions').doc(sessionId)
+    .collection('commentCounts')
+    .onSnapshot(snap => {
+      snap.docs.forEach(d => { commentCounts[d.id] = d.data().count || 0; });
+      renderGrid();
+    });
+}
+
+async function setVote(videoId, status) {
+  const ref = db.collection('sessions').doc(sessionId)
+    .collection('votes').doc(videoId);
+  const current = (votes[videoId] || {})[me];
+  const next = current === status ? null : status;
+  await ref.set({
+    [me]: next,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  }, { merge: true });
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+
+function fmtViews(n) {
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return Math.round(n/1e3) + 'K';
+  return n;
+}
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString('ru-RU', {day:'numeric', month:'short'});
+}
+function fmtDur(s) {
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+}
+function viewsCls(v) {
+  return v >= 500000 ? 'viral' : v >= 100000 ? 'hot' : '';
+}
+
+function getMyVote(vid) { return (votes[vid] || {})[me] || null; }
+function getApproveCount(vid) {
+  const v = votes[vid] || {};
+  return Object.values(v).filter(s => s === 'approved').length;
+}
+
+function filterVideos() {
+  return videos.filter(v => {
+    const my = getMyVote(v.id);
+    if (currentFilter === 'approved')  return my === 'approved';
+    if (currentFilter === 'maybe')     return my === 'maybe';
+    if (currentFilter === 'new')       return !my;
+    if (currentFilter === 'consensus') return getApproveCount(v.id) >= 2;
+    return true;
+  });
+}
+
+function updateApprovedCount() {
+  const n = videos.filter(v => getMyVote(v.id) === 'approved').length;
+  document.getElementById('cnt-approved').textContent = n;
+}
+
+function renderGrid() {
+  const list = filterVideos();
+  const grid = document.getElementById('grid');
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty">Нет видео в этой категории</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(v => {
+    const my = getMyVote(v.id);
+    const vv = votes[v.id] || {};
+    const cCount = commentCounts[v.id] || 0;
+
+    const voterChips = Object.entries(USERS).map(([uid, u]) => {
+      const st = vv[uid] || null;
+      const cls = st ? st : 'none';
+      const label = st === 'approved' ? '✓' : st === 'maybe' ? '?' : st === 'skip' ? '✗' : '·';
+      return `<span class="v-chip ${cls} ${st ? 'active' : ''}"
+        style="${st ? '' : `color:#333;border-color:#222`}"
+        title="${u.name}: ${st || 'не голосовал'}">${u.initial} ${label}</span>`;
+    }).join('');
+
+    return `<div class="card" data-my="${my || ''}" id="card-${v.id}">
+      <div class="thumb" onclick="window.open('${v.shortsUrl}','_blank')">
+        <img src="${v.thumbnail}" alt="" loading="lazy">
+        <span class="thumb-badge">Shorts</span>
+        <span class="thumb-dur">${fmtDur(v.durationSec)}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${v.title}</div>
+        <div class="card-meta">
+          <span>${v.channel} · ${fmtDate(v.publishedAt)}</span>
+          <span class="card-views ${viewsCls(v.views)}">${fmtViews(v.views)}</span>
+        </div>
+        <div class="voters">${voterChips}</div>
+        <div class="vote-row">
+          <button class="btn-vote btn-approved ${my==='approved'?'mine':''}"
+            onclick="setVote('${v.id}','approved')">✓ Берём</button>
+          <button class="btn-vote btn-maybe ${my==='maybe'?'mine':''}"
+            onclick="setVote('${v.id}','maybe')">? Вопрос</button>
+          <button class="btn-vote btn-skip ${my==='skip'?'mine':''}"
+            onclick="setVote('${v.id}','skip')">✗ Пропуск</button>
+          <a class="btn-yt" href="${v.shortsUrl}" target="_blank">▶</a>
+        </div>
+        <button class="btn-comment" onclick="openComments('${v.id}','${v.title.replace(/'/g,"\\'")}')">
+          <span class="comment-dot ${cCount > 0 ? 'has' : ''}"></span>
+          ${cCount > 0 ? cCount + ' комментари' + (cCount===1?'й':'я/ев') : 'Добавить комментарий'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Comments ─────────────────────────────────────────────────────────────────
+
+function openComments(videoId, title) {
+  commentVideoId = videoId;
+  document.getElementById('modal-video-title').textContent = title;
+  document.getElementById('comment-input').value = '';
+  document.getElementById('comment-modal').classList.add('open');
+
+  if (commentsUnsub) commentsUnsub();
+  commentsUnsub = db.collection('sessions').doc(sessionId)
+    .collection('comments').doc(videoId)
+    .collection('items')
+    .orderBy('createdAt', 'asc')
+    .onSnapshot(snap => renderComments(snap.docs));
+}
+
+function renderComments(docs) {
+  const list = document.getElementById('comments-list');
+  if (!docs.length) {
+    list.innerHTML = '<div class="no-comments">Комментариев пока нет</div>';
+    return;
+  }
+  list.innerHTML = docs.map(d => {
+    const data = d.data();
+    const u = USERS[data.author] || {};
+    const ts = data.createdAt?.toDate?.();
+    const time = ts ? ts.toLocaleString('ru-RU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<div class="comment-item">
+      <div class="comment-author" style="color:${u.color||'#aaa'}">${u.name||data.author}</div>
+      <div class="comment-text">${escHtml(data.text)}</div>
+      <div class="comment-time">${time}</div>
+    </div>`;
+  }).join('');
+  list.scrollTop = list.scrollHeight;
+}
+
+async function sendComment() {
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if (!text || !commentVideoId) return;
+
+  const btn = document.getElementById('comment-send');
+  btn.disabled = true;
+
+  const batch = db.batch();
+  const itemRef = db.collection('sessions').doc(sessionId)
+    .collection('comments').doc(commentVideoId)
+    .collection('items').doc();
+
+  batch.set(itemRef, {
+    author: me,
+    text,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+
+  const countRef = db.collection('sessions').doc(sessionId)
+    .collection('commentCounts').doc(commentVideoId);
+  batch.set(countRef, {
+    count: firebase.firestore.FieldValue.increment(1),
+  }, { merge: true });
+
+  await batch.commit();
+  input.value = '';
+  btn.disabled = false;
+  input.style.height = '40px';
+}
+
+function closeComments() {
+  document.getElementById('comment-modal').classList.remove('open');
+  if (commentsUnsub) { commentsUnsub(); commentsUnsub = null; }
+  commentVideoId = null;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+// ── Filter buttons ───────────────────────────────────────────────────────────
+
+document.querySelectorAll('.btn-f').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.btn-f').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.f;
+    renderGrid();
+  });
+});
+
+document.getElementById('comment-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeComments();
+});
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+
+const saved = localStorage.getItem('ubuyer_me');
+if (saved && USERS[saved]) {
+  selectUser(saved);
+} else {
+  document.getElementById('picker').style.display = 'flex';
+}
+</script>
+</body>
+</html>
