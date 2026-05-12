@@ -387,15 +387,20 @@ function toggleTagFilter(tag) {
 
 // ── Session ────────────────────────────────────────────────────────────────────
 async function loadLatestSession() {
-  const snap = await db.collection('sessions').orderBy('createdAt','desc').limit(1).get();
+  let snap = await db.collection('sessions').orderBy('createdAt','desc').limit(1).get();
   if (snap.empty) {
-    document.getElementById('grid').innerHTML =
-      '<div class="empty">Нет загруженных сессий.<br>Запусти <code>python fetch_videos.py</code></div>';
-    return;
+    // Создаём пустую сессию чтобы ручное добавление работало всегда
+    const ref = await db.collection('sessions').add({
+      videos: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    sessionId = ref.id;
+    sessionVideos = [];
+  } else {
+    const doc = snap.docs[0];
+    sessionId = doc.id;
+    sessionVideos = doc.data().videos || [];
   }
-  const doc = snap.docs[0];
-  sessionId = doc.id;
-  sessionVideos = doc.data().videos || [];
   document.getElementById('session-date').textContent = 'Сессия ' + sessionId;
   updateTotalCount();
   subscribeManualVideos();
