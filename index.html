@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UBuyer — Ревью референсов</title>
+<title>UBuyer — Контент Завод</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
@@ -11,7 +11,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#e8e8e8;min-height:100vh}
 
-/* ── User picker ── */
+/* picker */
 .picker-overlay{position:fixed;inset:0;background:#0f0f0f;z-index:300;display:flex;align-items:center;justify-content:center}
 .picker-box{text-align:center;padding:40px}
 .picker-logo{font-size:28px;font-weight:800;color:#fff;margin-bottom:8px}
@@ -23,27 +23,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .picker-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff}
 .picker-name{font-size:15px;font-weight:600;color:#fff}
 
-/* ── Header ── */
-header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+/* header */
+header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:10px 20px;position:sticky;top:0;z-index:100}
+.hrow1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .logo{font-weight:800;font-size:16px;color:#fff;white-space:nowrap}
 .logo span{color:#ff6b35}
+.tabs{display:flex;gap:2px;background:#111;padding:3px;border-radius:10px;border:1px solid #222}
+.tab-btn{padding:4px 12px;border-radius:7px;border:none;background:transparent;color:#666;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;white-space:nowrap}
+.tab-btn.active{background:#ff6b35;color:#fff}
 .session-badge{font-size:12px;color:#666;background:#111;padding:4px 10px;border-radius:6px;border:1px solid #2a2a2a}
-.current-user{display:flex;align-items:center;gap:8px;margin-left:auto}
-.user-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:opacity .15s}
-.user-avatar:hover{opacity:.75}
-.change-user{font-size:12px;color:#555;cursor:pointer}
-.change-user:hover{color:#aaa}
 .stats{display:flex;gap:12px;font-size:12px;color:#666}
 .stat strong{color:#ccc}
-.filters{display:flex;gap:6px;flex-wrap:wrap}
+.ml-auto{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-add{padding:5px 13px;border-radius:8px;border:none;background:#ff6b35;color:#fff;cursor:pointer;font-size:12px;font-weight:600}
+.btn-add:hover{background:#ff8552}
+.user-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0}
+.user-avatar:hover{opacity:.75}
+.change-user{font-size:12px;color:#555;cursor:pointer;white-space:nowrap}
+.change-user:hover{color:#aaa}
+.hrow2{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .btn-f{padding:5px 12px;border-radius:16px;border:1px solid #333;background:transparent;color:#777;cursor:pointer;font-size:12px;transition:all .15s;white-space:nowrap}
 .btn-f.active{background:#ff6b35;border-color:#ff6b35;color:#fff}
+.divider{width:1px;height:18px;background:#2a2a2a;flex-shrink:0}
+.btn-tag-f{padding:4px 10px;border-radius:12px;border:1px solid #2a2a2a;background:transparent;color:#555;cursor:pointer;font-size:11px;transition:all .15s}
+.btn-tag-f.on{border-color:#a78bfa;color:#a78bfa;background:rgba(139,92,246,.1)}
 
-/* ── Grid ── */
+/* grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:16px 20px}
 .empty{text-align:center;padding:80px 24px;color:#444;font-size:15px;grid-column:1/-1}
 
-/* ── Card ── */
+/* card */
 .card{background:#1a1a1a;border-radius:12px;overflow:hidden;border:2px solid #2a2a2a;transition:border-color .15s}
 .card[data-my="approved"]{border-color:#22c55e}
 .card[data-my="maybe"]{border-color:#fbbf24}
@@ -51,19 +60,27 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;posi
 .card[data-my="skip"]:hover{opacity:.85}
 .thumb{position:relative;cursor:pointer}
 .thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#111}
-.thumb-badge{position:absolute;top:7px;left:7px;background:#ff0050;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px}
+.thumb-badge{position:absolute;top:7px;left:7px;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px}
+.badge-shorts{background:#ff0050}
+.badge-manual{background:#7c3aed}
 .thumb-dur{position:absolute;bottom:6px;right:7px;background:rgba(0,0,0,.85);color:#fff;font-size:11px;padding:2px 6px;border-radius:4px}
 .ref-type{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;margin-bottom:6px}
-.ref-type.topic{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.25)}
-.ref-type.format{background:rgba(14,165,233,.15);color:#38bdf8;border:1px solid rgba(14,165,233,.25)}
+.ref-topic{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.25)}
+.ref-format{background:rgba(14,165,233,.15);color:#38bdf8;border:1px solid rgba(14,165,233,.25)}
+.ref-manual{background:rgba(124,58,237,.15);color:#c4b5fd;border:1px solid rgba(124,58,237,.25)}
 .card-body{padding:11px}
 .card-title{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-meta{font-size:11px;color:#666;display:flex;justify-content:space-between;margin-bottom:10px}
+.card-meta{font-size:11px;color:#666;display:flex;justify-content:space-between;margin-bottom:8px}
 .card-views{font-weight:600;color:#aaa}
 .card-views.hot{color:#fbbf24}
 .card-views.viral{color:#f87171}
-
-/* Vote row */
+.voters{display:flex;gap:5px;align-items:center;margin-bottom:8px;min-height:22px}
+.v-chip{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;opacity:.35}
+.v-chip.active{opacity:1}
+.v-chip.approved{background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)}
+.v-chip.maybe{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.v-chip.skip{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+.v-chip.none{background:#1f1f1f;color:#444;border:1px solid #2a2a2a}
 .vote-row{display:flex;gap:6px;margin-bottom:8px}
 .btn-vote{flex:1;padding:7px 4px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
 .btn-approved{background:#1a3a2a;color:#22c55e}
@@ -74,23 +91,16 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;posi
 .btn-skip:hover,.btn-skip.mine{background:#ef4444;color:#fff}
 .btn-yt{flex:0 0 auto;width:34px;border-radius:8px;border:1px solid #333;background:transparent;color:#777;cursor:pointer;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
 .btn-yt:hover{border-color:#aaa;color:#fff}
-
-/* Who voted */
-.voters{display:flex;gap:5px;align-items:center;margin-bottom:8px;min-height:22px}
-.v-chip{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;opacity:.35}
-.v-chip.active{opacity:1}
-.v-chip.approved{background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)}
-.v-chip.maybe{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
-.v-chip.skip{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
-.v-chip.none{background:#1f1f1f;color:#444;border:1px solid #2a2a2a}
-
-/* Comment btn */
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;min-height:20px}
+.tag-pill{font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid #2a2a2a;color:#444;cursor:pointer;transition:all .12s;user-select:none}
+.tag-pill.on{background:rgba(139,92,246,.15);color:#a78bfa;border-color:rgba(139,92,246,.4)}
+.tag-pill:hover:not(.on){border-color:#444;color:#777}
 .btn-comment{width:100%;padding:6px;border-radius:7px;border:1px solid #2a2a2a;background:transparent;color:#555;cursor:pointer;font-size:11px;text-align:left;display:flex;align-items:center;gap:6px;transition:all .15s}
 .btn-comment:hover{border-color:#444;color:#aaa}
 .comment-dot{width:6px;height:6px;border-radius:50%;background:#ff6b35;display:none}
 .comment-dot.has{display:inline-block}
 
-/* ── Comment modal ── */
+/* comment modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:#1a1a1a;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:560px;max-height:80vh;display:flex;flex-direction:column}
@@ -110,7 +120,77 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;posi
 .comment-send{padding:0 14px;border-radius:10px;border:none;background:#ff6b35;color:#fff;cursor:pointer;font-weight:600;font-size:13px}
 .comment-send:disabled{opacity:.4;cursor:default}
 
-@media(max-width:500px){.grid{grid-template-columns:1fr;padding:10px}.picker-users{flex-direction:column;align-items:center}}
+/* add video modal */
+.add-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:210;align-items:center;justify-content:center;padding:16px}
+.add-overlay.open{display:flex}
+.add-box{background:#1c1c1c;border-radius:16px;padding:24px;width:100%;max-width:460px}
+.add-box h3{font-size:16px;font-weight:700;margin-bottom:16px;color:#fff}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:#888;margin-bottom:5px}
+.field input{width:100%;background:#111;border:1px solid #333;border-radius:8px;color:#e8e8e8;padding:10px 12px;font-size:14px;font-family:inherit}
+.field input:focus{outline:none;border-color:#555}
+.field input::placeholder{color:#444}
+.plat-hint{font-size:11px;margin-top:5px;padding:3px 8px;border-radius:5px;display:inline-block}
+.plat-yt{background:rgba(255,0,0,.1);color:#f87171}
+.plat-tt{background:#1a1a1a;color:#888}
+.plat-ig{background:rgba(214,81,235,.1);color:#d451eb}
+.plat-other{background:#1a1a1a;color:#666}
+.preview-strip{display:flex;gap:10px;align-items:center;background:#111;border-radius:8px;padding:10px;margin-bottom:14px}
+.preview-strip img{width:80px;height:45px;object-fit:cover;border-radius:5px;background:#222;flex-shrink:0}
+.preview-strip-title{font-size:12px;color:#ccc;line-height:1.4}
+.add-btns{display:flex;gap:8px;justify-content:flex-end}
+.btn-cancel{padding:8px 16px;border-radius:8px;border:1px solid #333;background:transparent;color:#666;cursor:pointer;font-size:13px}
+.btn-save{padding:8px 20px;border-radius:8px;border:none;background:#ff6b35;color:#fff;cursor:pointer;font-size:13px;font-weight:600}
+.btn-save:disabled{opacity:.4;cursor:default}
+
+/* content plan tab */
+.plan-wrap{padding:20px;max-width:900px}
+.plan-col{margin-bottom:28px}
+.plan-col-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #2a2a2a}
+.plan-col-label{font-size:13px;font-weight:700;color:#fff}
+.plan-cnt{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.cnt-idea{background:rgba(96,165,250,.1);color:#60a5fa}
+.cnt-work{background:rgba(251,191,36,.1);color:#fbbf24}
+.cnt-shot{background:rgba(167,139,250,.1);color:#a78bfa}
+.cnt-edit{background:rgba(52,211,153,.1);color:#34d399}
+.cnt-pub{background:rgba(34,197,94,.1);color:#22c55e}
+.plan-card{background:#1a1a1a;border-radius:10px;padding:12px;display:flex;gap:12px;margin-bottom:8px;border:1px solid #2a2a2a;align-items:flex-start}
+.plan-thumb{width:90px;height:50px;object-fit:cover;border-radius:6px;background:#222;flex-shrink:0;cursor:pointer}
+.plan-info{flex:1;min-width:0}
+.plan-title{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.plan-sel{background:#111;border:1px solid #333;border-radius:6px;color:#ccc;padding:3px 8px;font-size:11px;cursor:pointer}
+.plan-sel:focus{outline:none;border-color:#555}
+.plan-date{background:#111;border:1px solid #333;border-radius:6px;color:#ccc;padding:3px 8px;font-size:11px}
+.plan-date:focus{outline:none;border-color:#555}
+.plan-empty{color:#444;font-size:13px;padding:4px 0 8px}
+
+/* discussion tab */
+.disc-wrap{display:flex;flex-direction:column;height:calc(100vh - 120px);max-width:680px;margin:0 auto;padding:0 20px}
+.disc-feed{flex:1;overflow-y:auto;padding:16px 0;display:flex;flex-direction:column;gap:12px}
+.disc-msg{background:#1a1a1a;border-radius:12px;padding:14px}
+.disc-msg-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.disc-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.disc-name{font-size:13px;font-weight:700}
+.disc-time{font-size:11px;color:#444;margin-left:auto}
+.disc-text{font-size:14px;color:#ddd;line-height:1.6;white-space:pre-wrap}
+.disc-reply-btn{margin-top:8px;font-size:11px;color:#555;background:none;border:none;cursor:pointer;padding:0}
+.disc-reply-btn:hover{color:#aaa}
+.disc-compose{border-top:1px solid #2a2a2a;padding:12px 0;display:flex;gap:8px;align-items:flex-end}
+.disc-input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;color:#e8e8e8;padding:10px 14px;font-size:14px;resize:none;height:44px;transition:height .15s;font-family:inherit;line-height:1.5}
+.disc-input:focus{outline:none;border-color:#444;height:90px}
+.disc-send{padding:10px 18px;border-radius:10px;border:none;background:#ff6b35;color:#fff;cursor:pointer;font-weight:600;font-size:14px;height:44px;white-space:nowrap}
+.disc-send:disabled{opacity:.4;cursor:default}
+.disc-empty{color:#444;text-align:center;padding:40px 0;font-size:14px}
+
+@media(max-width:500px){
+  .grid{grid-template-columns:1fr;padding:10px}
+  .picker-users{flex-direction:column;align-items:center}
+  .plan-card{flex-direction:column}
+  .plan-thumb{width:100%;height:160px}
+  .hrow1{gap:6px}
+  .stats{display:none}
+}
 </style>
 </head>
 <body>
@@ -118,7 +198,7 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;posi
 <!-- User Picker -->
 <div class="picker-overlay" id="picker">
   <div class="picker-box">
-    <div class="picker-logo">UBuyer <span>Ревью</span></div>
+    <div class="picker-logo">UBuyer <span>Контент Завод</span></div>
     <div class="picker-sub">Выбери себя, чтобы начать</div>
     <div class="picker-users">
       <div class="picker-user" onclick="selectUser('timur')">
@@ -140,27 +220,56 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;posi
 <!-- App -->
 <div id="app" style="display:none">
   <header>
-    <div class="logo">UBuyer <span>Ревью</span></div>
-    <div class="session-badge" id="session-date">—</div>
-    <div class="stats">
-      <div class="stat">Всего: <strong id="cnt-total">0</strong></div>
-      <div class="stat">Одобрено: <strong id="cnt-approved">0</strong></div>
+    <div class="hrow1">
+      <div class="logo">UBuyer <span>Завод</span></div>
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-review" onclick="switchTab('review')">Ревью</button>
+        <button class="tab-btn" id="tab-plan" onclick="switchTab('plan')">Контент-план</button>
+        <button class="tab-btn" id="tab-disc" onclick="switchTab('disc')">Обсуждение</button>
+      </div>
+      <div class="session-badge" id="session-date">—</div>
+      <div class="stats">
+        <div class="stat">Видео: <strong id="cnt-total">0</strong></div>
+        <div class="stat">Берём: <strong id="cnt-approved">0</strong></div>
+      </div>
+      <div class="ml-auto">
+        <button class="btn-add" id="btn-add-video" onclick="openAddModal()">+ Добавить</button>
+        <div class="user-avatar" id="my-avatar" onclick="resetUser()"></div>
+        <span class="change-user" onclick="resetUser()">сменить</span>
+      </div>
     </div>
-    <div class="filters">
-      <button class="btn-f active" data-f="all">Все</button>
-      <button class="btn-f" data-f="topic">🎯 Тема</button>
-      <button class="btn-f" data-f="format">🎬 Формат</button>
-      <button class="btn-f" data-f="approved">✓ Берём</button>
-      <button class="btn-f" data-f="maybe">? Вопрос</button>
-      <button class="btn-f" data-f="new">Не просмотрено</button>
-      <button class="btn-f" data-f="consensus">🔥 Консенсус</button>
-    </div>
-    <div class="current-user">
-      <div class="user-avatar" id="my-avatar" title="Сменить пользователя" onclick="resetUser()"></div>
-      <span class="change-user" onclick="resetUser()">сменить</span>
+    <div class="hrow2" id="review-filters">
+      <div class="filters">
+        <button class="btn-f active" data-f="all">Все</button>
+        <button class="btn-f" data-f="topic">🎯 Тема</button>
+        <button class="btn-f" data-f="format">🎬 Формат</button>
+        <button class="btn-f" data-f="manual">✋ Вручную</button>
+        <button class="btn-f" data-f="approved">✓ Берём</button>
+        <button class="btn-f" data-f="maybe">? Вопрос</button>
+        <button class="btn-f" data-f="new">Не просмотрено</button>
+        <button class="btn-f" data-f="consensus">🔥 Консенсус</button>
+      </div>
+      <div class="divider"></div>
+      <div id="tag-filters"></div>
     </div>
   </header>
-  <div class="grid" id="grid"></div>
+
+  <div id="view-review"><div class="grid" id="grid"></div></div>
+
+  <div id="view-plan" style="display:none">
+    <div class="plan-wrap" id="plan-wrap"></div>
+  </div>
+
+  <div id="view-disc" style="display:none">
+    <div class="disc-wrap">
+      <div class="disc-feed" id="disc-feed"></div>
+      <div class="disc-compose">
+        <textarea class="disc-input" id="disc-input" placeholder="Напиши вопрос или сообщение…"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendDiscMsg()}"></textarea>
+        <button class="disc-send" onclick="sendDiscMsg()">→</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Comment Modal -->
@@ -179,6 +288,32 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:12px 20px;posi
   </div>
 </div>
 
+<!-- Add Video Modal -->
+<div class="add-overlay" id="add-modal">
+  <div class="add-box">
+    <h3>+ Добавить видео</h3>
+    <div class="field">
+      <label>Ссылка на видео</label>
+      <input type="url" id="add-url" placeholder="https://youtube.com/shorts/..." oninput="onUrlInput(this.value)">
+      <span id="plat-hint"></span>
+    </div>
+    <div id="add-preview" style="display:none">
+      <div class="preview-strip">
+        <img id="add-thumb" src="" alt="">
+        <div class="preview-strip-title" id="add-preview-title"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Название (автозаполняется для YouTube)</label>
+      <input type="text" id="add-title" placeholder="Название видео">
+    </div>
+    <div class="add-btns">
+      <button class="btn-cancel" onclick="closeAddModal()">Отмена</button>
+      <button class="btn-save" id="add-save" onclick="saveManualVideo()" disabled>Добавить</button>
+    </div>
+  </div>
+</div>
+
 <script>
 firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.firestore();
@@ -188,65 +323,106 @@ const USERS = {
   nikita: { name: 'Никита', color: '#3b82f6', initial: 'Н' },
   roma:   { name: 'Рома',   color: '#22c55e', initial: 'Р' },
 };
+const ALL_TAGS = ['крюк', 'боль клиента', 'кейс', 'цифры', 'офис', 'юмор'];
+const PLAN_STATUSES = ['Идея', 'В работе', 'Снято', 'Смонтировано', 'Опубликовано'];
+const STATUS_KEY  = { 'Идея':'idea', 'В работе':'work', 'Снято':'shot', 'Смонтировано':'edit', 'Опубликовано':'pub' };
+const STATUS_LABEL = { idea:'Идея', work:'В работе', shot:'Снято', edit:'Смонтировано', pub:'Опубликовано' };
+const CNT_CLS = { 'Идея':'cnt-idea', 'В работе':'cnt-work', 'Снято':'cnt-shot', 'Смонтировано':'cnt-edit', 'Опубликовано':'cnt-pub' };
 
-let me = null;
-let sessionId = null;
-let videos = [];
-let votes = {};       // videoId → {timur, nikita, roma}
-let commentCounts = {}; // videoId → count
-let currentFilter = 'all';
+let me = null, sessionId = null;
+let sessionVideos = [], manualVideos = [];
+let votes = {}, commentCounts = {}, videoTags = {}, contentPlan = {};
+let currentFilter = 'all', tagFilter = null, currentTab = 'review';
 let commentVideoId = null;
-let commentsUnsub = null;
-let votesUnsub = null;
+let commentsUnsub = null, votesUnsub = null, manualUnsub = null, tagsUnsub = null, planUnsub = null, discUnsub = null;
+let addVideoData = null;
 
-// ── User ────────────────────────────────────────────────────────────────────
-
-function selectUser(userId) {
-  me = userId;
-  localStorage.setItem('ubuyer_me', userId);
+// ── User ──────────────────────────────────────────────────────────────────────
+function selectUser(uid) {
+  me = uid;
+  localStorage.setItem('ubuyer_me', uid);
   document.getElementById('picker').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  const u = USERS[userId];
+  const u = USERS[uid];
   const av = document.getElementById('my-avatar');
   av.textContent = u.initial;
   av.style.background = u.color;
+  renderTagFilters();
   loadLatestSession();
+  subscribeDiscussion();
 }
 
 function resetUser() {
   me = null;
   localStorage.removeItem('ubuyer_me');
-  if (votesUnsub) votesUnsub();
+  [votesUnsub, manualUnsub, tagsUnsub, planUnsub, discUnsub].forEach(u => u && u());
   document.getElementById('app').style.display = 'none';
   document.getElementById('picker').style.display = 'flex';
 }
 
-// ── Session ──────────────────────────────────────────────────────────────────
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  ['review','plan','disc'].forEach(t => {
+    document.getElementById('view-' + t).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+  document.getElementById('review-filters').style.display = tab === 'review' ? 'flex' : 'none';
+  document.getElementById('btn-add-video').style.display = tab === 'disc' ? 'none' : 'inline-block';
+  if (tab === 'plan') renderPlan();
+  if (tab === 'disc') scrollDiscToBottom();
+}
 
+// ── Tag filters ────────────────────────────────────────────────────────────────
+function renderTagFilters() {
+  document.getElementById('tag-filters').innerHTML = ALL_TAGS.map(t =>
+    `<button class="btn-tag-f ${tagFilter===t?'on':''}" onclick="toggleTagFilter('${t}')">${t}</button>`
+  ).join('');
+}
+function toggleTagFilter(tag) {
+  tagFilter = tagFilter === tag ? null : tag;
+  renderTagFilters();
+  renderGrid();
+}
+
+// ── Session ────────────────────────────────────────────────────────────────────
 async function loadLatestSession() {
-  const snap = await db.collection('sessions')
-    .orderBy('createdAt', 'desc')
-    .limit(1)
-    .get();
-
+  const snap = await db.collection('sessions').orderBy('createdAt','desc').limit(1).get();
   if (snap.empty) {
     document.getElementById('grid').innerHTML =
       '<div class="empty">Нет загруженных сессий.<br>Запусти <code>python fetch_videos.py</code></div>';
     return;
   }
-
   const doc = snap.docs[0];
   sessionId = doc.id;
-  videos = doc.data().videos || [];
-
+  sessionVideos = doc.data().videos || [];
   document.getElementById('session-date').textContent = 'Сессия ' + sessionId;
-  document.getElementById('cnt-total').textContent = videos.length;
-
+  updateTotalCount();
+  subscribeManualVideos();
   subscribeVotes();
   subscribeCommentCounts();
+  subscribeVideoTags();
+  subscribeContentPlan();
 }
 
-// ── Votes realtime ───────────────────────────────────────────────────────────
+function allVideos() { return [...sessionVideos, ...manualVideos]; }
+
+function updateTotalCount() {
+  document.getElementById('cnt-total').textContent = allVideos().length;
+}
+
+// ── Subscriptions ──────────────────────────────────────────────────────────────
+function subscribeManualVideos() {
+  if (manualUnsub) manualUnsub();
+  manualUnsub = db.collection('sessions').doc(sessionId)
+    .collection('manualVideos').orderBy('addedAt','desc')
+    .onSnapshot(snap => {
+      manualVideos = snap.docs.map(d => ({ ...d.data(), id: d.id, isManual: true }));
+      updateTotalCount();
+      renderGrid();
+      if (currentTab === 'plan') renderPlan();
+    });
+}
 
 function subscribeVotes() {
   if (votesUnsub) votesUnsub();
@@ -254,14 +430,12 @@ function subscribeVotes() {
     .collection('votes')
     .onSnapshot(snap => {
       snap.docChanges().forEach(ch => {
-        if (ch.type === 'removed') {
-          delete votes[ch.doc.id];
-        } else {
-          votes[ch.doc.id] = ch.doc.data();
-        }
+        if (ch.type === 'removed') delete votes[ch.doc.id];
+        else votes[ch.doc.id] = ch.doc.data();
       });
       renderGrid();
       updateApprovedCount();
+      if (currentTab === 'plan') renderPlan();
     });
 }
 
@@ -274,45 +448,83 @@ function subscribeCommentCounts() {
     });
 }
 
-async function setVote(videoId, status) {
-  const ref = db.collection('sessions').doc(sessionId)
-    .collection('votes').doc(videoId);
-  const current = (votes[videoId] || {})[me];
-  const next = current === status ? null : status;
-  await ref.set({
-    [me]: next,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
+function subscribeVideoTags() {
+  if (tagsUnsub) tagsUnsub();
+  tagsUnsub = db.collection('sessions').doc(sessionId)
+    .collection('videoTags')
+    .onSnapshot(snap => {
+      snap.docs.forEach(d => { videoTags[d.id] = d.data().tags || []; });
+      renderGrid();
+    });
 }
 
-// ── Render ───────────────────────────────────────────────────────────────────
+function subscribeContentPlan() {
+  if (planUnsub) planUnsub();
+  planUnsub = db.collection('contentPlan')
+    .onSnapshot(snap => {
+      snap.docs.forEach(d => { contentPlan[d.id] = d.data(); });
+      if (currentTab === 'plan') renderPlan();
+    });
+}
 
+function subscribeDiscussion() {
+  if (discUnsub) discUnsub();
+  discUnsub = db.collection('discussions')
+    .orderBy('createdAt','asc')
+    .onSnapshot(snap => renderDiscussion(snap.docs));
+}
+
+// ── Votes ──────────────────────────────────────────────────────────────────────
+async function setVote(videoId, status) {
+  const ref = db.collection('sessions').doc(sessionId).collection('votes').doc(videoId);
+  const current = (votes[videoId] || {})[me];
+  const next = current === status ? null : status;
+  await ref.set({ [me]: next, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+}
+
+// ── Tags ───────────────────────────────────────────────────────────────────────
+async function toggleTag(videoId, tag) {
+  const current = videoTags[videoId] || [];
+  const next = current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag];
+  await db.collection('sessions').doc(sessionId).collection('videoTags').doc(videoId).set({ tags: next });
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
 function fmtViews(n) {
   if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
   if (n >= 1e3) return Math.round(n/1e3) + 'K';
-  return n;
+  return n || '—';
 }
 function fmtDate(iso) {
-  return new Date(iso).toLocaleDateString('ru-RU', {day:'numeric', month:'short'});
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('ru-RU', { day:'numeric', month:'short' });
 }
 function fmtDur(s) {
+  if (!s) return '';
   return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
 }
-function viewsCls(v) {
-  return v >= 500000 ? 'viral' : v >= 100000 ? 'hot' : '';
-}
-
+function viewsCls(v) { return v >= 500000 ? 'viral' : v >= 100000 ? 'hot' : ''; }
 function getMyVote(vid) { return (votes[vid] || {})[me] || null; }
-function getApproveCount(vid) {
-  const v = votes[vid] || {};
-  return Object.values(v).filter(s => s === 'approved').length;
+function getApproveCount(vid) { return Object.values(votes[vid] || {}).filter(s => s === 'approved').length; }
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function escAttr(s) { return String(s||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;'); }
+
+function updateApprovedCount() {
+  document.getElementById('cnt-approved').textContent =
+    allVideos().filter(v => getMyVote(v.id) === 'approved').length;
 }
 
+// ── Grid render ────────────────────────────────────────────────────────────────
 function filterVideos() {
-  return videos.filter(v => {
+  return allVideos().filter(v => {
     const my = getMyVote(v.id);
+    const tags = videoTags[v.id] || [];
+    if (tagFilter && !tags.includes(tagFilter)) return false;
     if (currentFilter === 'topic')     return v.refType === 'topic';
     if (currentFilter === 'format')    return v.refType === 'format';
+    if (currentFilter === 'manual')    return v.isManual;
     if (currentFilter === 'approved')  return my === 'approved';
     if (currentFilter === 'maybe')     return my === 'maybe';
     if (currentFilter === 'new')       return !my;
@@ -321,95 +533,196 @@ function filterVideos() {
   });
 }
 
-function updateApprovedCount() {
-  const n = videos.filter(v => getMyVote(v.id) === 'approved').length;
-  document.getElementById('cnt-approved').textContent = n;
-}
-
 function renderGrid() {
   const list = filterVideos();
   const grid = document.getElementById('grid');
-
   if (!list.length) {
     grid.innerHTML = '<div class="empty">Нет видео в этой категории</div>';
     return;
   }
-
   grid.innerHTML = list.map(v => {
     const my = getMyVote(v.id);
     const vv = votes[v.id] || {};
     const cCount = commentCounts[v.id] || 0;
+    const tags = videoTags[v.id] || [];
 
     const voterChips = Object.entries(USERS).map(([uid, u]) => {
       const st = vv[uid] || null;
-      const cls = st ? st : 'none';
-      const label = st === 'approved' ? '✓' : st === 'maybe' ? '?' : st === 'skip' ? '✗' : '·';
-      return `<span class="v-chip ${cls} ${st ? 'active' : ''}"
-        style="${st ? '' : `color:#333;border-color:#222`}"
-        title="${u.name}: ${st || 'не голосовал'}">${u.initial} ${label}</span>`;
+      const lbl = st === 'approved' ? '✓' : st === 'maybe' ? '?' : st === 'skip' ? '✗' : '·';
+      return `<span class="v-chip ${st||'none'} ${st?'active':''}" title="${u.name}: ${st||'не голосовал'}">${u.initial} ${lbl}</span>`;
     }).join('');
 
-    return `<div class="card" data-my="${my || ''}" id="card-${v.id}">
-      <div class="thumb" onclick="window.open('${v.shortsUrl}','_blank')">
-        <img src="${v.thumbnail}" alt="" loading="lazy">
-        <span class="thumb-badge">Shorts</span>
-        <span class="thumb-dur">${fmtDur(v.durationSec)}</span>
+    const tagPills = ALL_TAGS.map(t =>
+      `<span class="tag-pill ${tags.includes(t)?'on':''}" onclick="toggleTag('${v.id}','${t}')">${t}</span>`
+    ).join('');
+
+    const refHtml = v.isManual
+      ? `<span class="ref-type ref-manual">✋ Вручную</span>`
+      : v.refType === 'topic'
+        ? `<span class="ref-type ref-topic">🎯 Тема</span>`
+        : `<span class="ref-type ref-format">🎬 Формат</span>`;
+
+    const badgeHtml = v.isManual
+      ? `<span class="thumb-badge badge-manual">${detectPlatformLabel(v.shortsUrl||v.url||'')}</span>`
+      : `<span class="thumb-badge badge-shorts">Shorts</span>`;
+
+    const videoUrl = v.shortsUrl || v.url || '#';
+
+    return `<div class="card" data-my="${my||''}" id="card-${v.id}">
+      <div class="thumb" onclick="window.open('${escAttr(videoUrl)}','_blank')">
+        <img src="${escAttr(v.thumbnail||'')}" alt="" loading="lazy">
+        ${badgeHtml}
+        ${v.durationSec ? `<span class="thumb-dur">${fmtDur(v.durationSec)}</span>` : ''}
       </div>
       <div class="card-body">
-        <div class="ref-type ${v.refType === 'topic' ? 'topic' : 'format'}">
-          ${v.refType === 'topic' ? '🎯 Тема' : '🎬 Формат'}
-        </div>
-        <div class="card-title">${v.title}</div>
+        ${refHtml}
+        <div class="card-title">${escHtml(v.title)}</div>
         <div class="card-meta">
-          <span>${v.channel} · ${fmtDate(v.publishedAt)}</span>
-          <span class="card-views ${viewsCls(v.views)}">${fmtViews(v.views)}</span>
+          <span>${v.channel ? escHtml(v.channel) + ' · ' : ''}${fmtDate(v.publishedAt)}</span>
+          ${v.views ? `<span class="card-views ${viewsCls(v.views)}">${fmtViews(v.views)}</span>` : ''}
         </div>
         <div class="voters">${voterChips}</div>
         <div class="vote-row">
-          <button class="btn-vote btn-approved ${my==='approved'?'mine':''}"
-            onclick="setVote('${v.id}','approved')">✓ Берём</button>
-          <button class="btn-vote btn-maybe ${my==='maybe'?'mine':''}"
-            onclick="setVote('${v.id}','maybe')">? Вопрос</button>
-          <button class="btn-vote btn-skip ${my==='skip'?'mine':''}"
-            onclick="setVote('${v.id}','skip')">✗ Пропуск</button>
-          <a class="btn-yt" href="${v.shortsUrl}" target="_blank">▶</a>
+          <button class="btn-vote btn-approved ${my==='approved'?'mine':''}" onclick="setVote('${v.id}','approved')">✓ Берём</button>
+          <button class="btn-vote btn-maybe ${my==='maybe'?'mine':''}" onclick="setVote('${v.id}','maybe')">? Вопрос</button>
+          <button class="btn-vote btn-skip ${my==='skip'?'mine':''}" onclick="setVote('${v.id}','skip')">✗ Пропуск</button>
+          <a class="btn-yt" href="${escAttr(videoUrl)}" target="_blank">▶</a>
         </div>
-        <button class="btn-comment" onclick="openComments('${v.id}','${v.title.replace(/'/g,"\\'")}')">
-          <span class="comment-dot ${cCount > 0 ? 'has' : ''}"></span>
-          ${cCount > 0 ? cCount + ' комментари' + (cCount===1?'й':'я/ев') : 'Добавить комментарий'}
+        <div class="card-tags">${tagPills}</div>
+        <button class="btn-comment" onclick="openComments('${v.id}','${escAttr(v.title||'')}')">
+          <span class="comment-dot ${cCount>0?'has':''}"></span>
+          ${cCount>0 ? cCount+' комментари'+(cCount===1?'й':'я/ев') : 'Добавить комментарий'}
         </button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── Comments ─────────────────────────────────────────────────────────────────
+// ── Content Plan ───────────────────────────────────────────────────────────────
+async function updatePlanStatus(videoId, field, value) {
+  await db.collection('contentPlan').doc(videoId)
+    .set({ [field]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+}
 
+function renderPlan() {
+  const approved = allVideos().filter(v => getApproveCount(v.id) >= 1);
+  const wrap = document.getElementById('plan-wrap');
+  if (!approved.length) {
+    wrap.innerHTML = '<div style="color:#444;padding:60px 20px;text-align:center">Ещё нет одобренных видео.<br>Проголосуй «Берём» на вкладке Ревью.</div>';
+    return;
+  }
+  const grouped = {};
+  PLAN_STATUSES.forEach(s => { grouped[s] = []; });
+  approved.forEach(v => {
+    const plan = contentPlan[v.id] || {};
+    const status = STATUS_LABEL[plan.status] || 'Идея';
+    (grouped[status] = grouped[status] || []).push({ v, plan });
+  });
+  wrap.innerHTML = PLAN_STATUSES.map(status => {
+    const items = grouped[status] || [];
+    const cardsHtml = items.length ? items.map(({ v, plan }) => {
+      const videoUrl = v.shortsUrl || v.url || '#';
+      const statusOpts = PLAN_STATUSES.map(s =>
+        `<option value="${STATUS_KEY[s]}" ${(plan.status||'idea')===STATUS_KEY[s]?'selected':''}>${s}</option>`
+      ).join('');
+      const shooterOpts = [['','Кто снимает?'],['timur','Тимур'],['nikita','Никита'],['roma','Рома']].map(([val,lbl]) =>
+        `<option value="${val}" ${(plan.shooter||'')===val?'selected':''}>${lbl}</option>`
+      ).join('');
+      return `<div class="plan-card">
+        <img class="plan-thumb" src="${escAttr(v.thumbnail||'')}" alt="" onclick="window.open('${escAttr(videoUrl)}','_blank')">
+        <div class="plan-info">
+          <div class="plan-title" title="${escAttr(v.title||'')}">${escHtml(v.title)}</div>
+          <div class="plan-row">
+            <select class="plan-sel" onchange="updatePlanStatus('${v.id}','status',this.value)">${statusOpts}</select>
+            <select class="plan-sel" onchange="updatePlanStatus('${v.id}','shooter',this.value)">${shooterOpts}</select>
+            <input class="plan-date" type="date" value="${plan.shootDate||''}"
+              onchange="updatePlanStatus('${v.id}','shootDate',this.value)" title="Дата съёмки">
+          </div>
+        </div>
+      </div>`;
+    }).join('') : '<div class="plan-empty">Пусто</div>';
+    return `<div class="plan-col">
+      <div class="plan-col-hdr">
+        <span class="plan-col-label">${status}</span>
+        <span class="plan-cnt ${CNT_CLS[status]}">${items.length}</span>
+      </div>
+      ${cardsHtml}
+    </div>`;
+  }).join('');
+}
+
+// ── Discussion ─────────────────────────────────────────────────────────────────
+function renderDiscussion(docs) {
+  const feed = document.getElementById('disc-feed');
+  if (!docs.length) {
+    feed.innerHTML = '<div class="disc-empty">Пока тихо.<br>Задай первый вопрос команде.</div>';
+    return;
+  }
+  const wasAtBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 60;
+  feed.innerHTML = docs.map(d => {
+    const data = d.data();
+    const u = USERS[data.author] || { name: data.author, color: '#888', initial: '?' };
+    const ts = data.createdAt?.toDate?.();
+    const time = ts ? ts.toLocaleString('ru-RU', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+    return `<div class="disc-msg">
+      <div class="disc-msg-header">
+        <div class="disc-avatar" style="background:${u.color}">${u.initial}</div>
+        <span class="disc-name" style="color:${u.color}">${u.name}</span>
+        <span class="disc-time">${time}</span>
+      </div>
+      <div class="disc-text">${escHtml(data.text)}</div>
+      <button class="disc-reply-btn" onclick="replyTo('${escAttr(u.name)}')">↩ ответить</button>
+    </div>`;
+  }).join('');
+  if (wasAtBottom) scrollDiscToBottom();
+}
+
+function scrollDiscToBottom() {
+  const feed = document.getElementById('disc-feed');
+  setTimeout(() => { feed.scrollTop = feed.scrollHeight; }, 50);
+}
+
+function replyTo(name) {
+  const input = document.getElementById('disc-input');
+  input.value = '@' + name + ': ';
+  input.focus();
+  input.style.height = '90px';
+}
+
+async function sendDiscMsg() {
+  const input = document.getElementById('disc-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = '44px';
+  await db.collection('discussions').add({
+    author: me,
+    text,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+}
+
+// ── Comments ───────────────────────────────────────────────────────────────────
 function openComments(videoId, title) {
   commentVideoId = videoId;
   document.getElementById('modal-video-title').textContent = title;
   document.getElementById('comment-input').value = '';
   document.getElementById('comment-modal').classList.add('open');
-
   if (commentsUnsub) commentsUnsub();
   commentsUnsub = db.collection('sessions').doc(sessionId)
-    .collection('comments').doc(videoId)
-    .collection('items')
-    .orderBy('createdAt', 'asc')
+    .collection('comments').doc(videoId).collection('items')
+    .orderBy('createdAt','asc')
     .onSnapshot(snap => renderComments(snap.docs));
 }
 
 function renderComments(docs) {
   const list = document.getElementById('comments-list');
-  if (!docs.length) {
-    list.innerHTML = '<div class="no-comments">Комментариев пока нет</div>';
-    return;
-  }
+  if (!docs.length) { list.innerHTML = '<div class="no-comments">Комментариев пока нет</div>'; return; }
   list.innerHTML = docs.map(d => {
     const data = d.data();
     const u = USERS[data.author] || {};
     const ts = data.createdAt?.toDate?.();
-    const time = ts ? ts.toLocaleString('ru-RU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    const time = ts ? ts.toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
     return `<div class="comment-item">
       <div class="comment-author" style="color:${u.color||'#aaa'}">${u.name||data.author}</div>
       <div class="comment-text">${escHtml(data.text)}</div>
@@ -423,27 +736,14 @@ async function sendComment() {
   const input = document.getElementById('comment-input');
   const text = input.value.trim();
   if (!text || !commentVideoId) return;
-
   const btn = document.getElementById('comment-send');
   btn.disabled = true;
-
   const batch = db.batch();
   const itemRef = db.collection('sessions').doc(sessionId)
-    .collection('comments').doc(commentVideoId)
-    .collection('items').doc();
-
-  batch.set(itemRef, {
-    author: me,
-    text,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  });
-
-  const countRef = db.collection('sessions').doc(sessionId)
-    .collection('commentCounts').doc(commentVideoId);
-  batch.set(countRef, {
-    count: firebase.firestore.FieldValue.increment(1),
-  }, { merge: true });
-
+    .collection('comments').doc(commentVideoId).collection('items').doc();
+  batch.set(itemRef, { author: me, text, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+  const countRef = db.collection('sessions').doc(sessionId).collection('commentCounts').doc(commentVideoId);
+  batch.set(countRef, { count: firebase.firestore.FieldValue.increment(1) }, { merge: true });
   await batch.commit();
   input.value = '';
   btn.disabled = false;
@@ -456,12 +756,96 @@ function closeComments() {
   commentVideoId = null;
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+// ── Manual Add Video ───────────────────────────────────────────────────────────
+function detectPlatform(url) {
+  if (/youtube\.com|youtu\.be/.test(url)) return 'youtube';
+  if (/tiktok\.com/.test(url)) return 'tiktok';
+  if (/instagram\.com/.test(url)) return 'instagram';
+  return 'other';
+}
+function detectPlatformLabel(url) {
+  return { youtube:'YouTube', tiktok:'TikTok', instagram:'Instagram', other:'Видео' }[detectPlatform(url)];
+}
+function extractYouTubeId(url) {
+  const m = url.match(/(?:shorts\/|v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
 }
 
-// ── Filter buttons ───────────────────────────────────────────────────────────
+let urlDebounce = null;
+async function onUrlInput(url) {
+  clearTimeout(urlDebounce);
+  const saveBtn = document.getElementById('add-save');
+  const hintEl = document.getElementById('plat-hint');
+  const previewEl = document.getElementById('add-preview');
+  addVideoData = null;
+  saveBtn.disabled = true;
+  if (!url.trim()) { hintEl.innerHTML = ''; previewEl.style.display = 'none'; return; }
 
+  const platform = detectPlatform(url);
+  const platCls = { youtube:'plat-yt', tiktok:'plat-tt', instagram:'plat-ig', other:'plat-other' };
+  const platLabel = { youtube:'YouTube', tiktok:'TikTok', instagram:'Instagram', other:'Другое' };
+  hintEl.className = 'plat-hint ' + platCls[platform];
+  hintEl.textContent = platLabel[platform];
+
+  urlDebounce = setTimeout(async () => {
+    if (platform === 'youtube') {
+      const videoId = extractYouTubeId(url);
+      if (!videoId) return;
+      const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+      let title = '', channel = '';
+      try {
+        const r = await fetch(`https://www.youtube.com/oembed?url=https://youtu.be/${videoId}&format=json`);
+        if (r.ok) { const d = await r.json(); title = d.title; channel = d.author_name; }
+      } catch {}
+      document.getElementById('add-thumb').src = thumbnail;
+      document.getElementById('add-preview-title').textContent = title || 'YouTube видео';
+      if (title) document.getElementById('add-title').value = title;
+      previewEl.style.display = 'block';
+      addVideoData = { title, thumbnail, channel, shortsUrl: url, platform, refType: 'manual',
+        views: 0, durationSec: 0, publishedAt: new Date().toISOString() };
+    } else {
+      previewEl.style.display = 'none';
+      addVideoData = { title: '', thumbnail: '', channel: '', shortsUrl: url, platform,
+        refType: 'manual', views: 0, durationSec: 0, publishedAt: new Date().toISOString() };
+    }
+    saveBtn.disabled = false;
+  }, 500);
+}
+
+function openAddModal() {
+  document.getElementById('add-url').value = '';
+  document.getElementById('add-title').value = '';
+  document.getElementById('plat-hint').textContent = '';
+  document.getElementById('add-preview').style.display = 'none';
+  document.getElementById('add-save').disabled = true;
+  addVideoData = null;
+  document.getElementById('add-modal').classList.add('open');
+  setTimeout(() => document.getElementById('add-url').focus(), 100);
+}
+
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+
+async function saveManualVideo() {
+  if (!addVideoData || !sessionId) return;
+  const title = document.getElementById('add-title').value.trim() || addVideoData.title;
+  if (!title) { document.getElementById('add-title').focus(); return; }
+  const btn = document.getElementById('add-save');
+  btn.disabled = true;
+  const docId = 'manual_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+  await db.collection('sessions').doc(sessionId).collection('manualVideos').doc(docId).set({
+    ...addVideoData,
+    title,
+    isManual: true,
+    addedBy: me,
+    addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  closeAddModal();
+  btn.disabled = false;
+}
+
+// ── Filter buttons ─────────────────────────────────────────────────────────────
 document.querySelectorAll('.btn-f').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.btn-f').forEach(b => b.classList.remove('active'));
@@ -474,15 +858,14 @@ document.querySelectorAll('.btn-f').forEach(btn => {
 document.getElementById('comment-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeComments();
 });
+document.getElementById('add-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeAddModal();
+});
 
-// ── Init ─────────────────────────────────────────────────────────────────────
-
+// ── Init ───────────────────────────────────────────────────────────────────────
 const saved = localStorage.getItem('ubuyer_me');
-if (saved && USERS[saved]) {
-  selectUser(saved);
-} else {
-  document.getElementById('picker').style.display = 'flex';
-}
+if (saved && USERS[saved]) selectUser(saved);
+else document.getElementById('picker').style.display = 'flex';
 </script>
 </body>
 </html>
