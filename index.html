@@ -168,6 +168,24 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:10px 20px;posi
 .plan-date:focus{outline:none;border-color:#555}
 .plan-empty{color:#444;font-size:13px;padding:4px 0 8px}
 
+/* scripts section */
+.scripts-hdr{font-size:15px;font-weight:700;color:#fff;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #2a2a2a;display:flex;align-items:center;gap:8px}
+.scripts-cnt{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,107,53,.1);color:#ff6b35;font-weight:600}
+.script-card{background:#1a1a1a;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #2a2a2a;transition:border-color .15s}
+.script-card:focus-within{border-color:#3a3a3a}
+.script-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.script-num{font-size:10px;font-weight:700;color:#ff6b35;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);padding:2px 8px;border-radius:5px;flex-shrink:0}
+.script-name{font-size:13px;font-weight:600;color:#fff;flex:1;min-width:0}
+.script-stat{background:#111;border:1px solid #333;border-radius:6px;color:#ccc;padding:3px 8px;font-size:11px;cursor:pointer;flex-shrink:0}
+.script-stat:focus{outline:none;border-color:#555}
+.script-field{margin-bottom:8px}
+.script-lbl{font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.script-ta{width:100%;background:#0f0f0f;border:1px solid #222;border-radius:8px;color:#ddd;padding:9px 12px;font-size:13px;line-height:1.55;resize:none;font-family:inherit;overflow:hidden;min-height:48px;transition:border-color .15s}
+.script-ta:focus{outline:none;border-color:#444;color:#eee}
+.script-meta{font-size:10px;color:#3a3a3a;margin-top:6px}
+.scripts-sep{border:none;border-top:1px solid #2a2a2a;margin:24px 0}
+.kanban-hdr{font-size:13px;font-weight:700;color:#555;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+
 /* discussion tab */
 .disc-wrap{display:flex;flex-direction:column;height:calc(100vh - 120px);max-width:680px;margin:0 auto;padding:0 20px}
 .disc-feed{flex:1;overflow-y:auto;padding:16px 0;display:flex;flex-direction:column;gap:12px}
@@ -264,7 +282,10 @@ header{background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:10px 20px;posi
   <div id="view-review"><div class="grid" id="grid"></div></div>
 
   <div id="view-plan" style="display:none">
-    <div class="plan-wrap" id="plan-wrap"></div>
+    <div class="plan-wrap">
+      <div id="scripts-wrap"></div>
+      <div id="kanban-wrap"></div>
+    </div>
   </div>
 
   <div id="view-disc" style="display:none">
@@ -337,12 +358,53 @@ const STATUS_KEY  = { 'Идея':'idea', 'В работе':'work', 'Снято':
 const STATUS_LABEL = { idea:'Идея', work:'В работе', shot:'Снято', edit:'Смонтировано', pub:'Опубликовано' };
 const CNT_CLS = { 'Идея':'cnt-idea', 'В работе':'cnt-work', 'Снято':'cnt-shot', 'Смонтировано':'cnt-edit', 'Опубликовано':'cnt-pub' };
 
+const SCRIPTS_DATA = [
+  { id:'scr_1',  order:1,  num:'#1',  title:'WB продаёт тех, кто уже продаёт',
+    hook:'Пока ты платишь за рекламу — конкурент наращивает оборот. Через месяц его карточка в топе, твоя нет. Это не случайность — это алгоритм.',
+    zatcep:'И вот здесь ломается большинство — они думают алгоритм видит клики. Он видит только одно.' },
+  { id:'scr_2',  order:2,  num:'#2',  title:'Карточка упала после рекламы',
+    hook:'Выключил рекламу — карточка упала. Ты думаешь WB тебя наказывает. Нет. Ты никогда и не был в органике.',
+    zatcep:'Сейчас скажу то, что большинство агентств не объяснят — им выгодно чтобы ты продолжал платить.' },
+  { id:'scr_3',  order:3,  num:'#3',  title:'Новая карточка: 14 дней',
+    hook:'У новой карточки WB есть ровно 14 дней. Большинство тратит их впустую. После — попасть в тот же топ стоит в 3 раза дороже. Это окно открывается один раз.',
+    zatcep:'Сейчас скажу точно что происходит если упустить это окно — с цифрами.' },
+  { id:'scr_4',  order:4,  num:'#4',  title:'6 ситуаций когда пора',
+    hook:'За 3 года — одна и та же ошибка. Все приходят слишком поздно. Вот 6 сигналов что пора — узнай свой.',
+    zatcep:'Третья ситуация — самая дорогая. Большинство не понимает во сколько она им обходится каждый день.' },
+  { id:'scr_5',  order:5,  num:'#5',  title:'Как WB распознаёт технический заказ',
+    hook:'WB вычисляет технический заказ за 3 покупки. Не за сто — за три. Объясню по каким параметрам. И почему у нас за 3 года — ноль блокировок.',
+    zatcep:'Второй параметр — тот что убивает большинство дешёвых сервисов. Они сами не знают что его нарушают.' },
+  { id:'scr_7',  order:6,  num:'#7',  title:'3 вопроса для проверки сервиса',
+    hook:'Перед тем как заплатить любому сервису — три вопроса. Если не ответят чётко: ты потеряешь не деньги — ты потеряешь карточку. Деньги вернуть можно. Карточку — нет.',
+    zatcep:'Третий вопрос самый неудобный. Большинство сервисов на него не ответят — и это уже ответ.' },
+  { id:'scr_8',  order:7,  num:'#8',  title:'Рекомендательные полки WB',
+    hook:'Конкурент тратит миллион на рекламу. Ты — ноль. Его покупатели видят твой товар рядом с его. Это называется рекомендательные полки — и о них молчат.',
+    zatcep:'Сейчас покажу где именно на WB находятся эти полки — и как туда попасть без рекламного бюджета.' },
+  { id:'scr_10', order:8,  num:'#10', title:'Карточка упала с топа — 3 причины',
+    hook:'Карточка упала. Добавил рекламу — не помогает. Потому что проблема не в рекламе. Три причины — одна точно твоя.',
+    zatcep:'Вторая причина — та о которой не принято говорить. Именно она убивает большинство карточек.' },
+  { id:'scr_11', order:9,  num:'#11', title:'Отрицательные отзывы убивают конверсию',
+    hook:'Один отзыв на одну звезду — минус 10% покупателей. Каждый день. Ты этого не видишь — это тихие потери. Но алгоритм видит всё.',
+    zatcep:'Сейчас покажу математику — сколько денег ты теряешь с каждым плохим отзывом который висит прямо сейчас.' },
+  { id:'scr_18', order:10, num:'#18', title:'Рычаг, не таблетка',
+    hook:'Сделал один раз — карточка поднялась, потом упала. Ты решил что не работает. Нет. Ты использовал рычаг как таблетку. Это разные вещи.',
+    zatcep:'Вот четыре ситуации когда нужно доставать этот рычаг — и одна, когда не нужно никогда.' },
+  { id:'scr_19', order:11, num:'#19', title:'Кейс: органика без рекламы',
+    hook:'Клиент сказал: реклама убивает маржу, органики нет. Мы не увеличили бюджет. Мы сделали одно действие. Через 14 дней органика пошла без рекламы.',
+    zatcep:'Действие было нестандартным. Большинство агентств его не предложат — им выгоднее продавать рекламу.' },
+  { id:'scr_20', order:12, num:'#20', title:'Что будет потом',
+    hook:'Вам поднимут карточку. Удержится она или упадёт — зависит не от сервиса. Зависит от вас. И это нужно услышать до того как вы начнёте.',
+    zatcep:'Сейчас скажу то, что большинство сервисов скроет — им проще взять деньги и обвинить WB когда не получится.' },
+];
+
 let me = null, sessionId = null;
 let sessionVideos = [], manualVideos = [];
 let votes = {}, commentCounts = {}, videoTags = {}, contentPlan = {};
+let scripts = {};
 let currentFilter = 'all', tagFilter = null, currentTab = 'review';
 let commentVideoId = null;
-let commentsUnsub = null, votesUnsub = null, manualUnsub = null, tagsUnsub = null, planUnsub = null, discUnsub = null;
+let commentsUnsub = null, votesUnsub = null, manualUnsub = null, tagsUnsub = null, planUnsub = null, discUnsub = null, scriptUnsub = null;
+const scriptDebounces = {};
 let addVideoData = null;
 
 // ── User ──────────────────────────────────────────────────────────────────────
@@ -363,7 +425,7 @@ function selectUser(uid) {
 function resetUser() {
   me = null;
   localStorage.removeItem('ubuyer_me');
-  [votesUnsub, manualUnsub, tagsUnsub, planUnsub, discUnsub].forEach(u => u && u());
+  [votesUnsub, manualUnsub, tagsUnsub, planUnsub, discUnsub, scriptUnsub].forEach(u => u && u());
   document.getElementById('app').style.display = 'none';
   document.getElementById('picker').style.display = 'flex';
 }
@@ -416,6 +478,8 @@ async function loadLatestSession() {
   subscribeCommentCounts();
   subscribeVideoTags();
   subscribeContentPlan();
+  await seedScriptsIfEmpty();
+  subscribeScripts();
 }
 
 function allVideos() { return [...sessionVideos, ...manualVideos]; }
@@ -624,12 +688,137 @@ async function updatePlanStatus(videoId, field, value) {
 }
 
 function renderPlan() {
+  renderScriptsSection();
+  renderKanban();
+}
+
+// ── Scripts ────────────────────────────────────────────────────────────────────
+async function seedScriptsIfEmpty() {
+  const snap = await db.collection('scripts').limit(1).get();
+  if (!snap.empty) return;
+  const batch = db.batch();
+  SCRIPTS_DATA.forEach(s => {
+    batch.set(db.collection('scripts').doc(s.id), {
+      ...s,
+      status: 'idea',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+  await batch.commit();
+}
+
+function subscribeScripts() {
+  if (scriptUnsub) scriptUnsub();
+  scriptUnsub = db.collection('scripts').orderBy('order').onSnapshot(snap => {
+    snap.docs.forEach(d => { scripts[d.id] = { id: d.id, ...d.data() }; });
+    if (currentTab === 'plan') {
+      const wrap = document.getElementById('scripts-wrap');
+      if (wrap && wrap.querySelector('.script-card')) refreshScripts();
+      else renderScriptsSection();
+    }
+  });
+}
+
+function autoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+
+function escTa(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderScriptCard(s) {
+  const u = s.updatedBy ? USERS[s.updatedBy] : null;
+  const ts = s.updatedAt?.toDate?.();
+  const timeStr = ts ? ts.toLocaleString('ru-RU', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+  const metaStr = u && ts ? `${u.name} · ${timeStr}` : '';
+  const statusOpts = PLAN_STATUSES.map(st =>
+    `<option value="${STATUS_KEY[st]}" ${(s.status||'idea')===STATUS_KEY[st]?'selected':''}>${st}</option>`
+  ).join('');
+  return `<div class="script-card">
+    <div class="script-head">
+      <span class="script-num">${escHtml(s.num)}</span>
+      <span class="script-name">${escHtml(s.title)}</span>
+      <select class="script-stat" onchange="updateScriptStatus('${s.id}',this.value)">${statusOpts}</select>
+    </div>
+    <div class="script-field">
+      <div class="script-lbl">Хук</div>
+      <textarea id="sf_${s.id}_hook" class="script-ta"
+        oninput="onScriptInput('${s.id}','hook',this)"
+        onblur="flushScript('${s.id}','hook',this)">${escTa(s.hook||'')}</textarea>
+    </div>
+    <div class="script-field">
+      <div class="script-lbl">Зацеп</div>
+      <textarea id="sf_${s.id}_zatcep" class="script-ta"
+        oninput="onScriptInput('${s.id}','zatcep',this)"
+        onblur="flushScript('${s.id}','zatcep',this)">${escTa(s.zatcep||'')}</textarea>
+    </div>
+    <div class="script-meta" id="sm_${s.id}">${metaStr ? 'Изменил: ' + metaStr : ''}</div>
+  </div>`;
+}
+
+function renderScriptsSection() {
+  const scriptsList = Object.values(scripts).sort((a,b) => (a.order||0)-(b.order||0));
+  const wrap = document.getElementById('scripts-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = `
+    <div class="scripts-hdr">Сценарии <span class="scripts-cnt">${scriptsList.length}</span></div>
+    ${scriptsList.map(s => renderScriptCard(s)).join('')}
+    <hr class="scripts-sep">
+  `;
+  wrap.querySelectorAll('.script-ta').forEach(ta => autoResize(ta));
+}
+
+function refreshScripts() {
+  Object.values(scripts).forEach(s => {
+    ['hook','zatcep'].forEach(field => {
+      const el = document.getElementById(`sf_${s.id}_${field}`);
+      if (el && document.activeElement !== el) {
+        el.value = s[field] || '';
+        autoResize(el);
+      }
+    });
+    const meta = document.getElementById(`sm_${s.id}`);
+    if (meta) {
+      const u = s.updatedBy ? USERS[s.updatedBy] : null;
+      const ts = s.updatedAt?.toDate?.();
+      const timeStr = ts ? ts.toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+      meta.textContent = u && ts ? `Изменил: ${u.name} · ${timeStr}` : '';
+    }
+  });
+}
+
+function onScriptInput(id, field, el) {
+  autoResize(el);
+  clearTimeout(scriptDebounces[id + '_' + field]);
+  scriptDebounces[id + '_' + field] = setTimeout(() => saveScriptField(id, field, el.value), 800);
+}
+
+function flushScript(id, field, el) {
+  clearTimeout(scriptDebounces[id + '_' + field]);
+  saveScriptField(id, field, el.value);
+}
+
+async function saveScriptField(id, field, value) {
+  await db.collection('scripts').doc(id).set(
+    { [field]: value, updatedBy: me, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+    { merge: true }
+  );
+}
+
+async function updateScriptStatus(id, status) {
+  await db.collection('scripts').doc(id).set(
+    { status, updatedBy: me, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+    { merge: true }
+  );
+}
+
+function renderKanban() {
   const approved = allVideos().filter(v => getApproveCount(v.id) >= 1);
-  const wrap = document.getElementById('plan-wrap');
-  if (!approved.length) {
-    wrap.innerHTML = '<div style="color:#444;padding:60px 20px;text-align:center">Ещё нет одобренных видео.<br>Проголосуй «Берём» на вкладке Ревью.</div>';
-    return;
-  }
+  const wrap = document.getElementById('kanban-wrap');
+  if (!wrap) return;
+  if (!approved.length) { wrap.innerHTML = ''; return; }
   const grouped = {};
   PLAN_STATUSES.forEach(s => { grouped[s] = []; });
   approved.forEach(v => {
@@ -637,7 +826,7 @@ function renderPlan() {
     const status = STATUS_LABEL[plan.status] || 'Идея';
     (grouped[status] = grouped[status] || []).push({ v, plan });
   });
-  wrap.innerHTML = PLAN_STATUSES.map(status => {
+  wrap.innerHTML = `<div class="kanban-hdr">Референсы в работе</div>` + PLAN_STATUSES.map(status => {
     const items = grouped[status] || [];
     const cardsHtml = items.length ? items.map(({ v, plan }) => {
       const videoUrl = v.shortsUrl || v.url || '#';
